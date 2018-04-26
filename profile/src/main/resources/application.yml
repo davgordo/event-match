@@ -1,0 +1,16 @@
+camel:
+  springboot:
+    name: Event
+  component:
+    servlet:
+      mapping:
+        enabled: true
+        context-path: /*
+
+management:
+  port: 8081
+
+endpoints:
+  enabled: false
+  health:
+    enabled: true

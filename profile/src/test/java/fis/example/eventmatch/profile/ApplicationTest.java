@@ -13,28 +13,31 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-
 package fis.example.eventmatch.profile;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
+import org.apache.camel.CamelContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Arquillian.class)
-@RunAsClient
-public class KubernetesIntegrationKT {
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+public class ApplicationTest {
 
-    @ArquillianResource
-    KubernetesClient client;
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Autowired
+    private CamelContext camelContext;
 
     @Test
-    public void testAppProvisionsRunningPods() throws Exception {
-        assertThat(client).deployments().pods().isPodReadyForPeriod();
+    public void test() {
+        assertThat(camelContext.isStartingRoutes());
     }
 }

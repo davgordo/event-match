@@ -1,0 +1,8 @@
+camel:
+  springboot:
+    name: Calendar
+  component:
+    servlet:
+      mapping:
+        enabled: true
+        context-path: /*

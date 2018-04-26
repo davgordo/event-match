@@ -7,20 +7,19 @@
   <artifactId>event</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>Fabric8 :: Quickstarts :: Spring-Boot :: Camel</name>
-  <description>Spring Boot example running a Camel route</description>
+  <name>Fabric8 :: Quickstarts :: Spring-Boot :: Camel REST / SQL</name>
+  <description>Spring Boot example running a Camel REST route connecting to a SQL database</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Spring Boot default profile in order to use an embedded database -->
+    <run.profiles>dev</run.profiles>
 
     <!-- configure the versions you want to use here -->
     <fabric8.version>3.0.8.fuse-000023-redhat-4</fabric8.version>
     <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
 
-    <arquillian-cube.version>1.9.0</arquillian-cube.version>
-    <assertj.version>2.4.1</assertj.version>
-
-    <!-- maven plugin versions -->
+    <!-- Maven plugin versions -->
     <fabric8.maven.plugin.version>3.5.33.fuse-000023-redhat-3</fabric8.maven.plugin.version>
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
@@ -28,6 +27,7 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- import Fabric8 platform BOM first -->
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>fabric8-project-bom-camel-spring-boot</artifactId>
@@ -35,44 +35,39 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
-      <!-- The following dependencies can be removed whe using fabric8 BOM 2.3.7+ -->
-      <dependency>
-        <groupId>org.arquillian.cube</groupId>
-        <artifactId>arquillian-cube-bom</artifactId>
-        <version>${arquillian-cube.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>${assertj.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
-
-    <!-- Enabling health checks -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-spring-boot-starter</artifactId>
+      <artifactId>camel-servlet-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jackson-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-swagger-java-starter</artifactId>
     </dependency>
 
     <!-- testing -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -81,22 +76,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.arquillian.cube</groupId>
-      <artifactId>arquillian-cube-openshift</artifactId>
+      <groupId>io.fabric8</groupId>
+      <artifactId>fabric8-arquillian</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>kubernetes-assertions</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
     <defaultGoal>spring-boot:run</defaultGoal>
 
     <plugins>
+      <!-- Compiler plugin enforces Java 1.8 compatibility -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
@@ -105,13 +100,12 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
-        <inherited>true</inherited>
         <configuration>
-          <argLine>-DenableImageStreamDetection=true</argLine>
           <excludes>
             <exclude>**/*KT.java</exclude>
           </excludes>
@@ -146,4 +140,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

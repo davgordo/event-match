@@ -1,0 +1,8 @@
+camel:
+  springboot:
+    name: Event
+  component:
+    servlet:
+      mapping:
+        enabled: true
+        context-path: /*
