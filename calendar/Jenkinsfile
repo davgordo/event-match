@@ -10,6 +10,7 @@ node('maven') {
 
   stage('Build') {
     checkout scm
+    sh "ls -hR"
     sh "mvn -B clean install -Dfabric8.skip=true -DskipTests=true --settings configuration/settings.xml"
   }
 
