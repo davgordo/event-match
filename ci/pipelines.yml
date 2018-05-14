@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: List
+items:
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"jenkins"}}'
+    name: jenkins
+- kind: RoleBinding
+  apiVersion: v1
+  metadata:
+    name: jenkins-edit
+    namespace: ci
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: ci
+- kind: RoleBinding
+  apiVersion: v1
+  metadata:
+    name: jenkins-edit
+    namespace: event-match-dev
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: ci
+- kind: RoleBinding
+  apiVersion: v1
+  metadata:
+    name: jenkins-edit
+    namespace: event-match-test
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: ci
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: calendar-pipeline
+  spec:
+    source:
+      git:
+        uri: https://github.com/davgordo/event-match.git
+      contextDir: calendar
+    strategy:
+      jenkinsPipelineStrategy: {}
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: event-pipeline
+  spec:
+    source:
+      git:
+        uri: https://github.com/davgordo/event-match.git
+      contextDir: event
+    strategy:
+      jenkinsPipelineStrategy: {}
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: profile-pipeline
+  spec:
+    source:
+      git:
+        uri: https://github.com/davgordo/event-match.git
+      contextDir: profile
+    strategy:
+      jenkinsPipelineStrategy: {}
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: suggestion-pipeline
+  spec:
+    source:
+      git:
+        uri: https://github.com/davgordo/event-match.git
+      contextDir: suggestion
+    strategy:
+      jenkinsPipelineStrategy: {}
