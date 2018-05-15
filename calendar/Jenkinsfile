@@ -30,8 +30,6 @@ node('maven') {
         stage('Deploy to DEV') {
             def oc = "oc --namespace=${DEV_PROJECT}"
             sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
-            sh "sleep 5"
-            sh "${oc} rollout latest ${APP_NAME}"
             sh "${oc} rollout status dc/${APP_NAME} --watch"
         }
 
@@ -53,8 +51,6 @@ node('maven') {
             def oc = "oc --namespace=${TEST_PROJECT}"
             sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
             sh "${oc} tag ${DEV_PROJECT}/${APP_NAME}:latest ${TEST_PROJECT}/${APP_NAME}:latest"
-            sh "sleep 5"
-            sh "${oc} rollout latest ${APP_NAME}"
             sh "${oc} rollout status dc/${APP_NAME} --watch"
         }
 

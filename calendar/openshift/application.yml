@@ -80,6 +80,7 @@ objects:
     test: false
     triggers:
     - type: ImageChange
+      automatic: true
       imageChangeParams:
         containerNames:
         - spring-boot
