@@ -15,6 +15,7 @@
  */
 package fis.example.eventmatch.calendar;
 
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -65,7 +66,8 @@ public class Application extends SpringBootServletInitializer {
                     .routeId("calendar-event")
                     .removeHeaders("*")
                     .transform(constant("Calendar Event"))
-                    .to("amq:queue:calendar.events?inOnly=true");
+                    .setExchangePattern(ExchangePattern.InOnly)
+                    .to("amq:queue:calendar.events");
         }
     }
 
