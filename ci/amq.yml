@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: amq-ephemeral-template
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The broker's OpenWire port.
+    labels:
+      application: amq
+    name: amq-openwire
+  spec:
+    ports:
+    - port: 61616
+      targetPort: 61616
+    selector:
+      deploymentConfig: amq
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Supports node discovery for mesh formation.
+      service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+    labels:
+      application: amq
+    name: amq-mesh
+  spec:
+    clusterIP: None
+    ports:
+    - name: mesh
+      port: 61616
+    selector:
+      deploymentConfig: amq
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      application: amq
+    name: amq
+  spec:
+    replicas: 1
+    selector:
+      deploymentConfig: amq
+    strategy:
+      rollingParams:
+        maxSurge: 0
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          application: amq
+          deploymentConfig: amq
+        name: amq
+      spec:
+        containers:
+        - env:
+          - name: AMQ_USER
+            value: ${AMQ_USER}
+          - name: AMQ_PASSWORD
+            value: ${AMQ_PASSWORD}
+          - name: AMQ_TRANSPORTS
+            value: openwire
+          - name: AMQ_MESH_DISCOVERY_TYPE
+            value: kube
+          - name: AMQ_MESH_SERVICE_NAME
+            value: broker-amq-mesh
+          - name: AMQ_MESH_SERVICE_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: AMQ_STORAGE_USAGE_LIMIT
+            value: 100 gb
+          - name: AMQ_QUEUE_MEMORY_LIMIT
+            value: ""
+          image: jboss-amq-63
+          imagePullPolicy: Always
+          name: amq
+          ports:
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+          - containerPort: 61616
+            name: tcp
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /opt/amq/bin/readinessProbe.sh
+        terminationGracePeriodSeconds: 60
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - amq
+        from:
+          kind: ImageStreamTag
+          name: jboss-amq-63:${AMQ_IMAGE_TAG}
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+  - name: AMQ_IMAGE_TAG
+    value: '1.2'
+  - name: AMQ_USER
+    value: userRU7
+  - name: AMQ_PASSWORD
+    value: kHLDaOnn

@@ -23,9 +23,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
+@ImportResource({"classpath:spring/amq.xml"})
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
@@ -57,7 +59,11 @@ public class Application extends SpringBootServletInitializer {
             rest("/").description("Calendar REST service")
                 .get("/calendars/{userId}").description("Get a user's calendar")
                     .route().routeId("calendar-api")
-                    .to("log:INFO");
+                    .to("direct:event");
+
+            from("direct:event")
+                    .routeId("calendar-event")
+                    .to("amq:queue:calendar.events");
         }
     }
 

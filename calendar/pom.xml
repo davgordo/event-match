@@ -54,7 +54,7 @@
 
   <dependencies>
 
-    <!-- Enabling health checks -->
+    <!-- Spring Boot -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring-boot-starter</artifactId>
@@ -67,6 +67,8 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
+
+    <!-- Camel -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-servlet-starter</artifactId>
@@ -80,8 +82,18 @@
       <artifactId>camel-swagger-java-starter</artifactId>
     </dependency>
 
+    <!-- ActiveMQ -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-camel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-pool</artifactId>
+    </dependency>
 
-    <!-- testing -->
+
+    <!-- Tests -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
