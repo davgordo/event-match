@@ -60,6 +60,10 @@ Create a Nexus instance:
 
 Open the resulting Nexus route URL in your browser then add `/nexus` to the HTTP path, e.g. `http://nexus-ci.192.168.42.192.nip.io/nexus`
 
+Login with user: `admin` password: `admin123`
+
+Browse to `Repositories`
+
 Add the following proxy repositores:
 
 | Repo ID             | Repo Name                           | Remote Storage Location                              |
