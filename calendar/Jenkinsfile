@@ -2,10 +2,13 @@
 
 node('maven') {
 
-    env.CI_PROJECT = "ci"
-    env.DEV_PROJECT = "event-match-dev"
-    env.TEST_PROJECT = "event-match-test"
-    env.APP_NAME = "calendar"
+    env.CI_PROJECT          = "ci"
+    env.DEV_PROJECT         = "event-match-dev"
+    env.TEST_PROJECT        = "event-match-test"
+    env.PROD_PROJECT        = "event-match-prod"
+    env.APP_NAME            = "calendar"
+    env.API_VERSION         = "1.0"
+    env.DEPLOYMENT_VERSION  = "${API_VERSION}.${BUILD_NUMBER}"
 
     checkout scm
 
@@ -21,7 +24,7 @@ node('maven') {
 
         stage('Build Image') {
             def oc = "oc --namespace=${CI_PROJECT}"
-            sh "${oc} process -f openshift/build.yml | ${oc} apply -f -"
+            sh "${oc} process -f openshift/build.yml -p APP_VERSION=${DEPLOYMENT_VERSION} | ${oc} apply -f -"
             sh "rm -rf oc-build && mkdir -p oc-build/deployments"
             sh "cp -rf target/*.jar oc-build/deployments/"
             sh "${oc} start-build ${APP_NAME} --from-dir=oc-build --wait --follow"
@@ -29,8 +32,8 @@ node('maven') {
 
         stage('Deploy to DEV') {
             def oc = "oc --namespace=${DEV_PROJECT}"
-            sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
-            sh "${oc} tag ${CI_PROJECT}/${APP_NAME}:latest ${DEV_PROJECT}/${APP_NAME}:latest"
+            sh "${oc} process -f openshift/application.yml -p APP_VERSION=${DEPLOYMENT_VERSION} | ${oc} apply -f -"
+            sh "${oc} tag ${CI_PROJECT}/${APP_NAME}:${DEPLOYMENT_VERSION} ${DEV_PROJECT}/${APP_NAME}:${DEPLOYMENT_VERSION}"
             sh "${oc} rollout status dc/${APP_NAME} --watch"
         }
 
@@ -52,8 +55,8 @@ node('maven') {
 
         stage('Deploy to TEST') {
             def oc = "oc --namespace=${TEST_PROJECT}"
-            sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
-            sh "${oc} tag ${DEV_PROJECT}/${APP_NAME}:latest ${TEST_PROJECT}/${APP_NAME}:latest"
+            sh "${oc} process -f openshift/application.yml -p APP_VERSION=${DEPLOYMENT_VERSION} | ${oc} apply -f -"
+            sh "${oc} tag ${DEV_PROJECT}/${APP_NAME}:${DEPLOYMENT_VERSION} ${TEST_PROJECT}/${APP_NAME}:${DEPLOYMENT_VERSION}"
             sh "${oc} rollout status dc/${APP_NAME} --watch"
         }
 
@@ -75,8 +78,8 @@ node('maven') {
 
         stage('Deploy to PROD') {
             def oc = "oc --namespace=${PROD_PROJECT}"
-            sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
-            sh "${oc} tag ${TEST_PROJECT}/${APP_NAME}:latest ${PROD_PROJECT}/${APP_NAME}:latest"
+            sh "${oc} process -f openshift/application.yml -p APP_VERSION=${DEPLOYMENT_VERSION} | ${oc} apply -f -"
+            sh "${oc} tag ${TEST_PROJECT}/${APP_NAME}:${DEPLOYMENT_VERSION} ${PROD_PROJECT}/${APP_NAME}:${DEPLOYMENT_VERSION}"
             sh "${oc} rollout status dc/${APP_NAME} --watch"
         }
 
