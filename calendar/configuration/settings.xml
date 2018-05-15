@@ -149,12 +149,12 @@
   <activeProfiles>
     <activeProfile>fuse.repos</activeProfile>
   </activeProfiles>
-  
+
   <mirrors>
     <mirror>
       <id>nexus-local</id>
       <name>Nexus</name>
-      <url>http://nexus-ci.192.168.42.192.nip.io/nexus/</url>
+      <url>http://nexus-ci.192.168.42.192.nip.io/nexus/content/groups/public/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
   </mirrors>
