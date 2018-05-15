@@ -80,14 +80,13 @@ objects:
     test: false
     triggers:
     - type: ImageChange
-      automatic: true
       imageChangeParams:
+        automatic: true
         containerNames:
         - spring-boot
         from:
           kind: ImageStreamTag
           name: calendar:${APP_VERSION}
-      type: ImageChange
 - apiVersion: v1
   kind: Service
   metadata:
