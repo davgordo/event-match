@@ -105,7 +105,7 @@ objects:
     selector:
       app: suggestion
       group: fis.example.eventmatch
-      provider: fabric8
+      version: ${APP_VERSION}
     sessionAffinity: None
     type: ClusterIP
 - apiVersion: v1
