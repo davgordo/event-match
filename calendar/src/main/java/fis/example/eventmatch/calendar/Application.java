@@ -65,7 +65,7 @@ public class Application extends SpringBootServletInitializer {
                     .routeId("calendar-event")
                     .removeHeaders("*")
                     .transform(constant("Calendar Event"))
-                    .to("amq:queue:calendar.events");
+                    .to("amq:queue:calendar.events?inOnly=true");
         }
     }
 
