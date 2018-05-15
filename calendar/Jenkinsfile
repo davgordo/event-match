@@ -7,10 +7,11 @@ node('maven') {
     env.TEST_PROJECT = "event-match-test"
     env.APP_NAME = "calendar"
 
+    checkout scm
+
     dir(APP_NAME) {
 
         stage('Build') {
-            checkout scm
             sh "mvn -B clean install -Dfabric8.skip=true -DskipTests=true --settings configuration/settings.xml"
         }
 
@@ -43,10 +44,11 @@ stage('Approve Promotion') {
 
 node('maven') {
 
+    checkout scm
+
     dir(APP_NAME) {
 
         stage('Deploy to TEST') {
-            checkout scm
             def oc = "oc --namespace=${TEST_PROJECT}"
             sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
             sh "${oc} tag ${DEV_PROJECT}/${APP_NAME}:latest ${TEST_PROJECT}/${APP_NAME}:latest"
