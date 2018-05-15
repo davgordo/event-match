@@ -3,6 +3,14 @@ kind: List
 metadata: {}
 items:
 - apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: nexus
+    name: nexus
+  spec:
+    dockerImageRepository: sonatype/nexus
+- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     labels:
