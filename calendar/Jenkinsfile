@@ -16,7 +16,7 @@ node('maven') {
         }
 
         stage('Unit Test') {
-            sh "mvn test -Dfabric8.skip=true --settings configuration/settings.xml"
+            sh "mvn -B test -Dfabric8.skip=true --settings configuration/settings.xml"
         }
 
         stage('Build Image') {
