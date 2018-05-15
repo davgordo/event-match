@@ -108,6 +108,21 @@ objects:
       provider: fabric8
     sessionAffinity: None
     type: ClusterIP
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: suggestion
+    labels:
+      app: suggestion
+      group: fis.example.eventmatch
+      version: ${APP_VERSION}
+  spec:
+    port:
+      targetPort: http
+    to:
+      kind: Service
+      name: suggestion
+      weight: 100
 parameters:
   - name: APP_VERSION
     value: latest
