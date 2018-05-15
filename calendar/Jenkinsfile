@@ -2,7 +2,7 @@
 
 node('maven') {
 
-    env.JAVA_HOME = ""
+    env.CI_PROJECT = "ci"
     env.DEV_PROJECT = "event-match-dev"
     env.TEST_PROJECT = "event-match-test"
     env.APP_NAME = "calendar"
@@ -30,6 +30,7 @@ node('maven') {
         stage('Deploy to DEV') {
             def oc = "oc --namespace=${DEV_PROJECT}"
             sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
+            sh "${oc} tag ${CI_PROJECT}/${APP_NAME}:latest ${DEV_PROJECT}/${APP_NAME}:latest"
             sh "${oc} rollout status dc/${APP_NAME} --watch"
         }
 
