@@ -108,3 +108,6 @@ objects:
       provider: fabric8
     sessionAffinity: None
     type: ClusterIP
+parameters:
+  - name: APP_VERSION
+    value: latest
