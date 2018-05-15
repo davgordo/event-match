@@ -2,52 +2,58 @@
 
 node('maven') {
 
-  env.JAVA_HOME = ""
-  env.DEV_PROJECT = "event-match-dev"
-  env.TEST_PROJECT = "event-match-test"
-  env.APP_NAME = "calendar"
+    env.JAVA_HOME = ""
+    env.DEV_PROJECT = "event-match-dev"
+    env.TEST_PROJECT = "event-match-test"
+    env.APP_NAME = "calendar"
 
+    dir(APP_NAME) {
 
-  stage('Build') {
-    checkout scm
-    sh "ls -hR"
-    sh "mvn -B clean install -Dfabric8.skip=true -DskipTests=true --settings configuration/settings.xml"
-  }
+        stage('Build') {
+            checkout scm
+            sh "mvn -B clean install -Dfabric8.skip=true -DskipTests=true --settings configuration/settings.xml"
+        }
 
-  stage('Unit Test') {
-     sh "mvn test -Dfabric8.skip=true --settings configuration/settings.xml"
-  }
+        stage('Unit Test') {
+            sh "mvn test -Dfabric8.skip=true --settings configuration/settings.xml"
+        }
 
-  stage('Build Image') {
-    def oc = "oc --namespace=${DEV_PROJECT}"
-    sh "${oc} process -f openshift/build.yml | ${oc} apply -f -"
-    sh "rm -rf oc-build && mkdir -p oc-build/deployments"
-    sh "cp -rf target/*.jar oc-build/deployments/"
-    sh "${oc} start-build ${APP_NAME} --from-dir=oc-build --wait --follow"
-  }
+        stage('Build Image') {
+            def oc = "oc --namespace=${DEV_PROJECT}"
+            sh "${oc} process -f openshift/build.yml | ${oc} apply -f -"
+            sh "rm -rf oc-build && mkdir -p oc-build/deployments"
+            sh "cp -rf target/*.jar oc-build/deployments/"
+            sh "${oc} start-build ${APP_NAME} --from-dir=oc-build --wait --follow"
+        }
 
-  stage('Deploy to DEV') {
-    def oc = "oc --namespace=${DEV_PROJECT}"
-    sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
-    sh "${oc} rollout latest ${APP_NAME}"
-    sh "${oc} rollout status dc/${APP_NAME} --watch"
-  }
+        stage('Deploy to DEV') {
+            def oc = "oc --namespace=${DEV_PROJECT}"
+            sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
+            sh "${oc} rollout latest ${APP_NAME}"
+            sh "${oc} rollout status dc/${APP_NAME} --watch"
+        }
+
+    }
 
 }
 
-stage ('Approve Promotion') {
-  input 'Proceed to TEST?'
+stage('Approve Promotion') {
+    input 'Proceed to TEST?'
 }
 
 node('maven') {
 
-  stage('Deploy to TEST') {
-    checkout scm
-    def oc = "oc --namespace=${TEST_PROJECT}"
-    sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
-    sh "${oc} tag ${DEV_PROJECT}/${APP_NAME}:latest ${TEST_PROJECT}/${APP_NAME}:latest"
-    sh "${oc} rollout latest ${APP_NAME}"
-    sh "${oc} rollout status dc/${APP_NAME} --watch"
-  }
+    dir(APP_NAME) {
+
+        stage('Deploy to TEST') {
+            checkout scm
+            def oc = "oc --namespace=${TEST_PROJECT}"
+            sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
+            sh "${oc} tag ${DEV_PROJECT}/${APP_NAME}:latest ${TEST_PROJECT}/${APP_NAME}:latest"
+            sh "${oc} rollout latest ${APP_NAME}"
+            sh "${oc} rollout status dc/${APP_NAME} --watch"
+        }
+
+    }
 
 }
