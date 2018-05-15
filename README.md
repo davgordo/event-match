@@ -22,6 +22,8 @@ Create DEV and TEST environments:
 
 `oc new-project event-match-test`
 
+`oc new-project event-match-prod`
+
 Create CI Project:
 
 `oc new-project ci`

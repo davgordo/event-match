@@ -39,7 +39,9 @@ node('maven') {
 }
 
 stage('Approve Promotion') {
+    milestone 1
     input 'Proceed to TEST?'
+    milestone 2
 }
 
 node('maven') {
@@ -56,5 +58,30 @@ node('maven') {
         }
 
     }
+
+}
+
+stage('Approve Promotion') {
+    milestone 3
+    input 'Proceed to PROD?'
+    milestone 4
+}
+
+node('maven') {
+
+    checkout scm
+
+    dir(APP_NAME) {
+
+        stage('Deploy to PROD') {
+            def oc = "oc --namespace=${PROD_PROJECT}"
+            sh "${oc} process -f openshift/application.yml | ${oc} apply -f -"
+            sh "${oc} tag ${TEST_PROJECT}/${APP_NAME}:latest ${PROD_PROJECT}/${APP_NAME}:latest"
+            sh "${oc} rollout status dc/${APP_NAME} --watch"
+        }
+
+    }
+
+    milestone 5
 
 }
