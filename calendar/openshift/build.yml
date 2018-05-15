@@ -33,6 +33,13 @@ objects:
     postCommit: {}
     resources: {}
     triggers: []
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: calendar
+    labels:
+      app: calendar
+      group: fis.example.eventmatch
 parameters:
   - name: APP_VERSION
     value: latest
