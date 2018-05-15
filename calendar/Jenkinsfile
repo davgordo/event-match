@@ -9,6 +9,7 @@ node('maven') {
     env.APP_NAME            = "calendar"
     env.API_VERSION         = "1.0"
     env.DEPLOYMENT_VERSION  = "${API_VERSION}.${BUILD_NUMBER}"
+    env.BUILD_DISPLAY_NAME  = "v${DEPLOYMENT_VERSION}"
 
     checkout scm
 
