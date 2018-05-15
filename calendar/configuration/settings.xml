@@ -154,7 +154,7 @@
     <mirror>
       <id>nexus-local</id>
       <name>Nexus</name>
-      <url>http://nexus-ci.192.168.42.192.nip.io/nexus/content/groups/public/</url>
+      <url>http://nexus:8081/nexus/content/groups/public/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
   </mirrors>
