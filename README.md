@@ -30,6 +30,16 @@ Create DEV and TEST environments:
 
 `oc new-project event-match-prod`
 
+### Deploy AMQ
+
+`oc process -f ci/amq.yml -o yaml | oc -n event-match-dev apply -f -`
+
+`oc process -f ci/amq.yml -o yaml | oc -n event-match-test apply -f -`
+
+`oc process -f ci/amq.yml -o yaml | oc -n event-match-prod apply -f -`
+
+Note: You can provide parameters to the template by adding `-l AMQ_USER=dev AMQ_PASSWORD=secret` to the `oc process` command.
+
 ### Set up CI/CD
 
 Create CI Project:
@@ -44,7 +54,20 @@ Create the Jenkins Pipelines:
 
 A local Maven mirror is highly recommended for faster builds.
 
-More info about deploying Nexus is here: https://alainpham.github.io/posts/faster-fuse-integration-service-s2i-openshift-deployments/
+Create a Nexus instance:
+
+`oc apply -f ci/nexus.yml`
+
+Open the resulting Nexus route URL in your browser then add `/nexus` to the HTTP path, e.g. `http://nexus-ci.192.168.42.192.nip.io/nexus`
+
+Add the following proxy repositores:
+
+| Repo ID             | Repo Name                           | Remote Storage Location                              |
+| ------------------- | ----------------------------------- | ---------------------------------------------------- |
+| jboss-ga-repository | The Red Hat GA repository           | https://maven.repository.redhat.com/ga/              |
+| jboss-ea-repository | The Red Hat Early Access repository | https://maven.repository.redhat.com/earlyaccess/all/ |
+
+Go to the configuration tab for the `Public Repositories` group, and include the two newly created proxy repos.
 
 Note: If you do not deploy Nexus to the `ci` project, remove the "mirror" configuration from `${service}/configuration/settings.xml`.
 
