@@ -6,9 +6,9 @@ This application makes event suggestions based on users' availability, location,
 
 ### Deploy Cluster
 
-Start an OpenShift cluster: 
+Start an OpenShift cluster with the appropriate resources: 
 
-`minishift start`
+`minishift start --cpus=2 --memory=6GB`
 
 Login to the CLI: 
 
