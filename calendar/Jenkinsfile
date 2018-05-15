@@ -8,9 +8,10 @@ node('maven') {
     env.PROD_PROJECT        = "event-match-prod"
     env.APP_NAME            = "calendar"
     env.API_VERSION         = "1.0"
-    env.DEPLOYMENT_VERSION  = "${API_VERSION}.${BUILD_NUMBER}"
+    env.DEPLOYMENT_VERSION  = "v${API_VERSION}.${BUILD_NUMBER}"
 
-    currentBuild.displayName = "v${DEPLOYMENT_VERSION}"
+    currentBuild.displayName = "${DEPLOYMENT_VERSION}"
+    currentBuild.description = "${APP_NAME}-${API_VERSION}.${BUILD_NUMBER}"
 
     checkout scm
 
