@@ -20,7 +20,7 @@ node('maven') {
         }
 
         stage('Build Image') {
-            def oc = "oc --namespace=${DEV_PROJECT}"
+            def oc = "oc --namespace=${CI_PROJECT}"
             sh "${oc} process -f openshift/build.yml | ${oc} apply -f -"
             sh "rm -rf oc-build && mkdir -p oc-build/deployments"
             sh "cp -rf target/*.jar oc-build/deployments/"
