@@ -2,6 +2,8 @@
 
 This application makes event suggestions based on users' availability, location, and interests, given a database of events.
 
+![Application Overview Diagram](agile-integration-demo.jpg?raw=true "Application Overview Diagram") 
+
 ## Installation
 
 ### Deploy Cluster
