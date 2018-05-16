@@ -6,10 +6,18 @@ camel:
       mapping:
         enabled: true
         context-path: /*
-
+activemq:
+  broker:
+    url: tcp://amq-openwire:61616
+    username: userRU7
+    password: kHLDaOnn
+  concurrent:
+    consumers: 10
+  pool:
+    max:
+      connections: 8
 management:
   port: 8081
-
 endpoints:
   enabled: false
   health:

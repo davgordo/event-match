@@ -6,3 +6,11 @@ camel:
       mapping:
         enabled: true
         context-path: /*
+activemq:
+  broker:
+    url: vm://localhost:61616?broker.persistent=false
+  concurrent:
+    consumers: 10
+  pool:
+    max:
+      connections: 8
