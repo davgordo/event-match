@@ -1,9 +1,11 @@
 package fis.example.eventmatch.calendar;
 
+import fis.example.eventmatch.calendar.model.Calendar;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.activemq.camel.component.ActiveMQConfiguration;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
@@ -15,6 +17,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
@@ -96,18 +99,24 @@ public class Application extends SpringBootServletInitializer {
                 .bindingMode(RestBindingMode.json);
 
             rest("/").description("Calendar REST service")
-                .get("/calendars/{userId}").description("Get a user's calendar")
-                    .route().routeId("calendar-api")
-                    .to("direct:event");
-
-            from("direct:event")
-                    .routeId("calendar-event")
+                .get("/calendars/{userId}")
+                    .produces("application/json").type(Calendar.class)
+                    .route().routeId("get-calendar")
+                    .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.OK))
+                    .setBody(constant(new Calendar()))
+                .endRest()
+                .post("/calendars/{userId}")
+                    .consumes("application/json").type(Calendar.class)
+                    .route().routeId("update-calendar")
                     .removeHeaders("CamelHttp*")
+                    .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.CREATED))
                     .transform(simple("Calendar Event ${headers.userId}"))
                     .setExchangePattern(ExchangePattern.InOnly)
-                    .to("amq:topic:calendar.updated");
+                    .to("amq:topic:calendar.updated")
+                .endRest();
 
         }
+
     }
 
 }

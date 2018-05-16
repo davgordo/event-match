@@ -26,11 +26,22 @@ public class ApplicationTest {
     MockEndpoint mockCalendarUpdatedTopic;
 
     @Test
-    public void testAvailabilityChangedEvent() throws Exception {
+    public void testGetCalendar() throws Exception {
         mockCalendarUpdatedTopic.expectedMessageCount(1);
         ResponseEntity<String> response = restTemplate.getForEntity("/calendars/1", String.class);
 
-        Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.ACCEPTED);
+        Assert.assertTrue(response.getBody().contains("entryList"));
+    }
+
+
+    @Test
+    public void testUpdateCalendar() throws Exception {
+        String calendarUpdate = "{\"entryList\": [{\"available\": \"true\", \"start\": \"2018-09-01T16:30:00\", \"end\":\"2018-09-01T19:00:00\"}]}";
+        mockCalendarUpdatedTopic.expectedMessageCount(1);
+        ResponseEntity<String> response = restTemplate.postForEntity("/calendars/1", calendarUpdate, String.class);
+
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.CREATED);
         Assert.assertTrue(response.getBody().contains("Calendar Event 1"));
         mockCalendarUpdatedTopic.assertIsSatisfied();
     }
