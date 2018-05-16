@@ -3,8 +3,6 @@ package fis.example.eventmatch.calendar.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 
-import java.util.Date;
-
 public class Entry {
 
     @JsonProperty

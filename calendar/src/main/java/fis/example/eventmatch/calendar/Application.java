@@ -99,20 +99,22 @@ public class Application extends SpringBootServletInitializer {
                 .bindingMode(RestBindingMode.json);
 
             rest("/").description("Calendar REST service")
+
                 .get("/calendars/{userId}")
                     .produces("application/json").type(Calendar.class)
                     .route().routeId("get-calendar")
-                    .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.OK))
                     .setBody(constant(new Calendar()))
                 .endRest()
+
                 .post("/calendars/{userId}")
                     .consumes("application/json").type(Calendar.class)
                     .route().routeId("update-calendar")
                     .removeHeaders("CamelHttp*")
-                    .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.CREATED))
-                    .transform(simple("Calendar Event ${headers.userId}"))
+                    .setBody(simple("Calendar Event ${headers.userId}"))
                     .setExchangePattern(ExchangePattern.InOnly)
                     .to("amq:topic:calendar.updated")
+                    .setBody(constant(null))
+                    .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.CREATED.value()))
                 .endRest();
 
         }

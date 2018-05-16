@@ -30,10 +30,9 @@ public class ApplicationTest {
         mockCalendarUpdatedTopic.expectedMessageCount(1);
         ResponseEntity<String> response = restTemplate.getForEntity("/calendars/1", String.class);
 
-        Assert.assertEquals(response.getStatusCode(), HttpStatus.ACCEPTED);
+        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assert.assertTrue(response.getBody().contains("entryList"));
     }
-
 
     @Test
     public void testUpdateCalendar() throws Exception {
@@ -41,10 +40,9 @@ public class ApplicationTest {
         mockCalendarUpdatedTopic.expectedMessageCount(1);
         ResponseEntity<String> response = restTemplate.postForEntity("/calendars/1", calendarUpdate, String.class);
 
-        Assert.assertEquals(response.getStatusCode(), HttpStatus.CREATED);
-        Assert.assertTrue(response.getBody().contains("Calendar Event 1"));
+        Assert.assertEquals(HttpStatus.CREATED,response.getStatusCode());
+        Assert.assertFalse(response.hasBody());
         mockCalendarUpdatedTopic.assertIsSatisfied();
     }
-
 
 }
