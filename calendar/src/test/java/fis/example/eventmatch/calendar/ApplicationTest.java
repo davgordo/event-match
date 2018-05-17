@@ -27,22 +27,13 @@ public class ApplicationTest {
 
     @Test
     public void testGetCalendar() throws Exception {
-        mockCalendarUpdatedTopic.expectedMessageCount(1);
-        ResponseEntity<String> response = restTemplate.getForEntity("/calendars/1", String.class);
 
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assert.assertTrue(response.getBody().contains("entryList"));
+        String calendarUpdate = "{\"userId\":\"davgordo\",\"entryList\":[{\"available\":true,\"start\":1535819400000,\"end\":1535828400000}]}";
+        ResponseEntity<String> response1 = restTemplate.postForEntity("/calendars/davgordo", calendarUpdate, String.class);
+        Assert.assertEquals(HttpStatus.CREATED,response1.getStatusCode());
+
+        ResponseEntity<String> response2 = restTemplate.getForEntity("/calendars/davgordo", String.class);
+        Assert.assertEquals(HttpStatus.OK, response2.getStatusCode());
+        Assert.assertEquals(calendarUpdate, response2.getBody());
     }
-
-    @Test
-    public void testUpdateCalendar() throws Exception {
-        String calendarUpdate = "{\"entryList\": [{\"available\": \"true\", \"start\": \"2018-09-01T16:30:00\", \"end\":\"2018-09-01T19:00:00\"}]}";
-        mockCalendarUpdatedTopic.expectedMessageCount(1);
-        ResponseEntity<String> response = restTemplate.postForEntity("/calendars/1", calendarUpdate, String.class);
-
-        Assert.assertEquals(HttpStatus.CREATED,response.getStatusCode());
-        Assert.assertFalse(response.hasBody());
-        mockCalendarUpdatedTopic.assertIsSatisfied();
-    }
-
 }

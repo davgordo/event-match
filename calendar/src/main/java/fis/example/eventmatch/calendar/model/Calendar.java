@@ -8,7 +8,18 @@ import java.util.List;
 public class Calendar {
 
     @JsonProperty
+    String userId;
+
+    @JsonProperty
     List<Entry> entryList = new ArrayList<Entry>();
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public List<Entry> getEntryList() {
         return entryList;
@@ -21,8 +32,8 @@ public class Calendar {
     @Override
     public String toString() {
         return "Calendar{" +
-                "entryList=" + entryList +
+                "userId='" + userId + '\'' +
+                ", entryList=" + entryList +
                 '}';
     }
-
 }

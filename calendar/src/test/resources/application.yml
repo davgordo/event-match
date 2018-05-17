@@ -14,3 +14,6 @@ activemq:
   pool:
     max:
       connections: 8
+mongodb:
+  database: calendars
+  collection: calendars

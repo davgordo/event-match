@@ -1,7 +1,8 @@
 package fis.example.eventmatch.calendar.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.joda.time.DateTime;
+
+import java.util.Date;
 
 public class Entry {
 
@@ -9,10 +10,10 @@ public class Entry {
     private boolean available;
 
     @JsonProperty
-    private DateTime start;
+    private Date start;
 
     @JsonProperty
-    private DateTime end;
+    private Date end;
 
     public boolean isAvailable() {
         return available;
@@ -22,19 +23,19 @@ public class Entry {
         this.available = available;
     }
 
-    public DateTime getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public void setStart(DateTime start) {
+    public void setStart(Date start) {
         this.start = start;
     }
 
-    public DateTime getEnd() {
+    public Date getEnd() {
         return end;
     }
 
-    public void setEnd(DateTime end) {
+    public void setEnd(Date end) {
         this.end = end;
     }
 

@@ -22,3 +22,6 @@ endpoints:
   enabled: false
   health:
     enabled: true
+mongodb:
+  database: calendars
+  collection: calendars
