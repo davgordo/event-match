@@ -1,0 +1,63 @@
+{
+	"info": {
+		"_postman_id": "0119eb1d-9986-44b8-93f2-d8da66725733",
+		"name": "event-match-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST Calendar",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userId\":\"davgordo\",\n\t\"entryList\":[{\n\t\t\"available\":true,\n\t\t\"start\":1535819400000,\n\t\t\"end\":1535828400000\n\t}]\n}"
+				},
+				"url": {
+					"raw": "http://calendar-event-match-{{environment_slug}}.{{minishift_ip}}.nip.io/calendars/davgordo",
+					"protocol": "http",
+					"host": [
+						"calendar-event-match-{{environment_slug}}",
+						"{{minishift_ip}}",
+						"nip",
+						"io"
+					],
+					"path": [
+						"calendars",
+						"davgordo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Calendars",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://calendar-event-match-{{environment_slug}}.{{minishift_ip}}.nip.io/calendars/davgordo",
+					"protocol": "http",
+					"host": [
+						"calendar-event-match-{{environment_slug}}",
+						"{{minishift_ip}}",
+						"nip",
+						"io"
+					],
+					"path": [
+						"calendars",
+						"davgordo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
