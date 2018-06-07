@@ -1,6 +1,6 @@
 camel:
   springboot:
-    name: Event
+    name: Suggestions
   component:
     servlet:
       mapping:
