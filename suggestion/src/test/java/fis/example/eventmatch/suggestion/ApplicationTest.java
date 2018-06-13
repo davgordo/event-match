@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.apache.camel.builder.Builder.constant;
 
@@ -28,7 +29,22 @@ public class ApplicationTest {
     MockEndpoint mockCalendarService;
 
     @Test
-    public void testGetUserCalendar() throws Exception {
+    @DirtiesContext
+    public void testNoAvailabilityInUserCalendar() throws Exception {
+        String mockCalendarResponse = "{\"userId\":\"davgordo\",\"entryList\":[]}";
+        String expectedSuggestionList = "[]";
+        mockCalendarService.returnReplyBody(constant(mockCalendarResponse));
+
+        ResponseEntity<String> response = restTemplate.getForEntity("/suggestions?userId=davgordo", String.class);
+
+        mockCalendarService.assertIsSatisfied();
+        Assert.assertEquals(HttpStatus.OK,response.getStatusCode());
+        Assert.assertEquals(expectedSuggestionList, response.getBody());
+    }
+
+    @Test
+    @DirtiesContext
+    public void testHardcodedEventMatch() throws Exception {
 
         String mockCalendarResponse = "{\"userId\":\"davgordo\",\"entryList\":[{\"available\":true,\"start\":1535819400000,\"end\":1535828400000}]}";
         String expectedSuggestionList = "[{\"score\":0,\"event\":\"Perfect fit for davgordo\"}]";

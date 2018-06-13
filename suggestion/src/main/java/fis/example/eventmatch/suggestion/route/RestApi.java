@@ -37,11 +37,16 @@ class RestApi extends RouteBuilder {
                 .to("rest:get:calendars/{userId}?host=calendar:8080")
                 .unmarshal().json(JsonLibrary.Jackson, Calendar.class)
                 .process(exchange -> {
+
                     Calendar response = exchange.getIn().getBody(Calendar.class);
                     ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
-                    Suggestion suggestion = new Suggestion();
-                    suggestion.setEvent("Perfect fit for " + response.getUserId());
-                    suggestionList.add(suggestion);
+
+                    if(response.getEntryList().size() > 0) {
+                        Suggestion suggestion = new Suggestion();
+                        suggestion.setEvent("Perfect fit for " + response.getUserId());
+                        suggestionList.add(suggestion);
+                    }
+
                     exchange.getIn().setBody(suggestionList);
                 });
 
