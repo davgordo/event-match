@@ -42,7 +42,6 @@ class RestApi extends RouteBuilder {
                     result.remove("_id");
                     exchange.getIn().setBody(result);
                 })
-                .log("Looks like this: ${body}")
             .endRest()
 
             .post("/calendars/{userId}")
