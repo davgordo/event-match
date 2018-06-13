@@ -4,10 +4,8 @@ package fis.example.eventmatch.suggestion.route;
 import fis.example.eventmatch.suggestion.model.Calendar;
 import fis.example.eventmatch.suggestion.model.Suggestion;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.camel.spi.DataFormat;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ class RestApi extends RouteBuilder {
                 .produces("application/json").type(Suggestion[].class)
                 .route().routeId("get-suggestions")
                 .removeHeaders("*","userId")
-                .to("rest:get:calendars/{userId}?host=calendar.svc")
+                .to("rest:get:calendars/{userId}?host=calendar:8080")
                 .unmarshal().json(JsonLibrary.Jackson, Calendar.class)
                 .process(exchange -> {
                     Calendar response = exchange.getIn().getBody(Calendar.class);
