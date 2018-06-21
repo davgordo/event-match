@@ -28,32 +28,65 @@ public class ApplicationTest {
     @EndpointInject(uri = "mock:rest:get:calendars/{userId}")
     MockEndpoint mockCalendarService;
 
+    @EndpointInject(uri = "mock:rest:get:events")
+    MockEndpoint mockEventService;
+
     @Test
     @DirtiesContext
-    public void testNoAvailabilityInUserCalendar() throws Exception {
-        String mockCalendarResponse = "{\"userId\":\"davgordo\",\"entryList\":[]}";
+    public void testNoEvents() throws Exception {
+
+        String mockCalendarResponse = "{\"userId\":\"davgordo\",\"entryList\":[{\"available\":true,\"start\":1535819400000,\"end\":1535828400000}]}";
         String expectedSuggestionList = "[]";
+
         mockCalendarService.returnReplyBody(constant(mockCalendarResponse));
+        mockCalendarService.expectedMessageCount(1);
+        mockEventService.returnReplyBody(constant("[]"));
+        mockEventService.expectedMessageCount(1);
 
         ResponseEntity<String> response = restTemplate.getForEntity("/suggestions?userId=davgordo", String.class);
 
         mockCalendarService.assertIsSatisfied();
+        mockEventService.assertIsSatisfied();
+        Assert.assertEquals(HttpStatus.OK,response.getStatusCode());
+        Assert.assertEquals(expectedSuggestionList, response.getBody());
+    }
+
+
+    @Test
+    @DirtiesContext
+    public void testNoCalendarAvailability() throws Exception {
+        String mockCalendarResponse = "{\"userId\":\"davgordo\",\"entryList\":[]}";
+        String expectedSuggestionList = "[]";
+
+        mockCalendarService.returnReplyBody(constant(mockCalendarResponse));
+        mockCalendarService.expectedMessageCount(1);
+        mockEventService.returnReplyBody(constant("[{\"name\":\"Perfect fit for davgordo\"}]"));
+        mockEventService.expectedMessageCount(1);
+
+        ResponseEntity<String> response = restTemplate.getForEntity("/suggestions?userId=davgordo", String.class);
+
+        mockCalendarService.assertIsSatisfied();
+        mockEventService.assertIsSatisfied();
         Assert.assertEquals(HttpStatus.OK,response.getStatusCode());
         Assert.assertEquals(expectedSuggestionList, response.getBody());
     }
 
     @Test
     @DirtiesContext
-    public void testHardcodedEventMatch() throws Exception {
+    public void testOneEventMatchesAvailability() throws Exception {
 
         String mockCalendarResponse = "{\"userId\":\"davgordo\",\"entryList\":[{\"available\":true,\"start\":1535819400000,\"end\":1535828400000}]}";
         String expectedSuggestionList = "[{\"score\":0,\"event\":\"Perfect fit for davgordo\"}]";
+
         mockCalendarService.returnReplyBody(constant(mockCalendarResponse));
         mockCalendarService.expectedMessageCount(1);
+        mockEventService.returnReplyBody(constant("[{\"name\":\"Perfect fit for davgordo\"}]"));
+        mockEventService.expectedMessageCount(1);
 
         ResponseEntity<String> response = restTemplate.getForEntity("/suggestions?userId=davgordo", String.class);
 
         mockCalendarService.assertIsSatisfied();
+        mockEventService.assertIsSatisfied();
         Assert.assertEquals(HttpStatus.OK,response.getStatusCode());
         Assert.assertEquals(expectedSuggestionList, response.getBody());
 

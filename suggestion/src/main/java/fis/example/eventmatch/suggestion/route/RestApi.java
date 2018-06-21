@@ -1,7 +1,7 @@
 package fis.example.eventmatch.suggestion.route;
 
-
 import fis.example.eventmatch.suggestion.model.Calendar;
+import fis.example.eventmatch.suggestion.model.Event;
 import fis.example.eventmatch.suggestion.model.Suggestion;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -9,6 +9,7 @@ import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Component
 class RestApi extends RouteBuilder {
@@ -23,9 +24,7 @@ class RestApi extends RouteBuilder {
                 .apiProperty("cors", "true")
                 .apiContextRouteId("doc-api")
                 .component("servlet")
-                .bindingMode(RestBindingMode.json);
-
-        restConfiguration()
+                .bindingMode(RestBindingMode.json)
                 .producerComponent("http4");
 
         rest("/").description("Suggestions REST service")
@@ -36,18 +35,22 @@ class RestApi extends RouteBuilder {
                 .removeHeaders("*","userId")
                 .to("rest:get:calendars/{userId}?host=calendar:8080")
                 .unmarshal().json(JsonLibrary.Jackson, Calendar.class)
+                .setProperty("calendar", body())
+                .to("rest:get:events?host=event:8080")
+                .unmarshal().json(JsonLibrary.Jackson, Event[].class)
+                .setProperty("events", body())
                 .process(exchange -> {
+                    Calendar calendar = exchange.getProperty("calendar", Calendar.class);
+                    ArrayList<Event> events = new ArrayList<Event>(Arrays.asList(exchange.getProperty("events", Event[].class)));
+                    ArrayList<Suggestion> suggestions = new ArrayList<Suggestion>();
 
-                    Calendar response = exchange.getIn().getBody(Calendar.class);
-                    ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
-
-                    if(response.getEntryList().size() > 0) {
+                    if(calendar.getEntryList().size() > 0 && events.size() > 0) {
                         Suggestion suggestion = new Suggestion();
-                        suggestion.setEvent("Perfect fit for " + response.getUserId());
-                        suggestionList.add(suggestion);
+                        suggestion.setEvent("Perfect fit for " + calendar.getUserId());
+                        suggestions.add(suggestion);
                     }
 
-                    exchange.getIn().setBody(suggestionList);
+                    exchange.getIn().setBody(suggestions);
                 });
 
     }
